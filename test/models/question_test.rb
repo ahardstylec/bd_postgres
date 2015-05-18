@@ -4,34 +4,35 @@ class QuestionTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end
-  test "cassandra insert test" do
-    Benchmark.bm do |bm|
-      # joining an array of strings
-      puts "Create 1 Million Question Records With 4 Answers"
-      bm.report do
-        questions =[]
-        authors = []
-        (0..100).each do |author_nummer|
-          authors.push(Author.new(name: "author #{author_nummer}", email: "author_email_#{author_nummer}@author_email.de"))
-        end
-        Author.transaction do
-          authors.each(&:save)
-          end
-        authors.each do |author|
-          (1..10000).each do |index|
-            questions<<Question.new(author_id: author.id, question: "frage #{index}")
-          end
-        end
+  test "postgres insert 1.000.000" do
+    Question.bulk_insert(0.01)
+  end
+  #
+  # test "postgres insert 1.000.000 optimized" do
+  #   Question.bulk_insert_optimized(0.01)
+  # end
 
-        Question.transaction do
-          questions.each(&:save)
-        end
-        questions.each do |question|
-          (1..5).each do |anwsernum|
-            Answer.new(question_id: question.id, answer: "bla", correct: (anwsernum%5 == 0))
-          end
-        end
-      end
-    end
-    end
+  test "sql_pure_inserts 1.000.000 optimized" do
+    Question.sql_pure_inserts(0.01)
+  end
+  #
+  # test "postgres insert 1.000.000 optimized" do
+  #   Question.bulk_insert(1)
+  # end
+  #
+  # test "postgres insert 5.000.000" do
+  #   Question.bulk_insert(5)
+  # end
+  #
+  # test "postgres insert 5.000.000 optimized" do
+  #   Question.sql_pure_inserts(5)
+  # end
+  #
+  # test "postgres insert 10.000.000" do
+  #   Question.bulk_insert(10)
+  # end
+  #
+  # test "postgres insert 10.000.000 optimized" do
+  #   Question.sql_pure_inserts(10)
+  # end
 end
