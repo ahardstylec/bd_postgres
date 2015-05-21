@@ -5,7 +5,7 @@ class QuestionTest < ActiveSupport::TestCase
   #   assert true
   # end
   test "postgres insert 1.000.000" do
-    Question.bulk_insert(0.01)
+    Question.bulk_insert(0.001)
   end
   #
   # test "postgres insert 1.000.000 optimized" do
@@ -13,7 +13,7 @@ class QuestionTest < ActiveSupport::TestCase
   # end
 
   test "sql_pure_inserts 1.000.000 optimized" do
-    Question.sql_pure_inserts(0.01)
+    Question.sql_pure_inserts(0.001)
   end
   #
   # test "postgres insert 1.000.000 optimized" do
