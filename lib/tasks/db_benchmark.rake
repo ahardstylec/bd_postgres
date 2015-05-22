@@ -25,17 +25,17 @@ namespace :db_benchmark do
     # trunc_tables
 
 
-    bench = Question.sql_pure_inserts(1)
+    bench = Question.sql_pure_inserts(0.0001)
     # puts sprintf("  %2.2fx faster than base", base_1.real / bench.real)
     Question.select_from_author
     Question.select_count
     STDOUT.flush
-    bench = Question.sql_pure_inserts(5)
+    bench = Question.sql_pure_inserts(0.0005)
     # puts sprintf("  %2.2fx faster than base", base_5.real / bench.real)
     Question.select_from_author
     Question.select_count
     STDOUT.flush
-    bench = Question.sql_pure_inserts(10)
+    bench = Question.sql_pure_inserts(0.0010)
     # puts sprintf("  %2.2fx faster than base", base_10.real / bench.real)
     Question.select_from_author
     Question.select_count
