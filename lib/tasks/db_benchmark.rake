@@ -11,14 +11,17 @@ namespace :db_benchmark do
     base_1 = Question.bulk_insert(0.0001)
     Question.select_from_author
     Question.select_count
+    STDOUT.flush
     trunc_tables
     base_5 = Question.bulk_insert(0.0005)
     Question.select_from_author
     Question.select_count
+    STDOUT.flush
     trunc_tables
     base_10 = Question.bulk_insert(0.001)
     Question.select_from_author
     Question.select_count
+    STDOUT.flush
     trunc_tables
 
     #
