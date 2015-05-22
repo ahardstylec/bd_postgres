@@ -35,31 +35,28 @@ class Question < ActiveRecord::Base
 
   def self.sql_pure_inserts(insert_multifier)
     puts "pure sql insert with #{100*10000*insert_multifier} records"
-    time= Time.now
     puts bench= Benchmark.measure {
       questions =[]
       authors = []
-      (1..100).map do |author_nummer|
-        inserts=[]
-        authors<< Author.create(name: "author #{author_nummer}", email: "author_email_#{author_nummer}@author_email.de")
-        Question.transaction do
-          authors.each do |author|
-            (1..10000*insert_multifier).each do |index|
-              questions<<Question.create(author_id: author.id, question: "frage #{index}")
-            end
-          end
+      Author.transaction do
+        (1..100).map do |author_nummer|
+          authors<< Author.create(name: "author #{author_nummer}", email: "author_email_#{author_nummer}@author_email.de")
         end
-        questions.each do |question|
-          (1..5).each do |anwsernum|
-            inserts.push "(#{(anwsernum%5 == 0)}, 'bla antwort', #{question.id}, '#{time}', '#{time}')"
-          end
-        end
-        sql_command = "INSERT INTO answers (correct,  answer, question_id, created_at, updated_at) VALUES #{inserts.join(", ")}"
-        ActiveRecord::Base.connection.execute sql_command
-        nil
       end
-
-         }
+      Question.transaction do
+        authors.each do |author|
+          (1..10000*insert_multifier).each do |index|
+            questions<<Question.create(author_id: author.id, question: "frage #{index}")
+          end
+        end
+      end
+      questions.each do |question|
+        (1..5).each do |anwsernum|
+          Answer.create(question_id: question.id, answer: 'bla antwort', correct: (anwsernum%5 == 0))
+        end
+      end
+      nil
+      }
     bench
   end
 end
