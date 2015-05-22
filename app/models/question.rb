@@ -38,29 +38,28 @@ class Question < ActiveRecord::Base
     time= Time.now
     puts bench= Benchmark.measure {
       questions =[]
-      inserts=[]
       authors = []
-      Author.transaction do
-        (1..100).map do |author_nummer|
-            authors<< Author.create(name: "author #{author_nummer}", email: "author_email_#{author_nummer}@author_email.de")
-        end
-      end
-      Question.transaction do
-        authors.each do |author|
-          (1..10000*insert_multifier).each do |index|
-            questions<<Question.create(author_id: author.id, question: "frage #{index}")
+      (1..100).map do |author_nummer|
+        inserts=[]
+        authors<< Author.create(name: "author #{author_nummer}", email: "author_email_#{author_nummer}@author_email.de")
+        Question.transaction do
+          authors.each do |author|
+            (1..10000*insert_multifier).each do |index|
+              questions<<Question.create(author_id: author.id, question: "frage #{index}")
+            end
           end
         end
-      end
-      questions.each do |question|
-        (1..5).each do |anwsernum|
-          inserts.push "(#{(anwsernum%5 == 0)}, 'bla antwort', #{question.id}, '#{time}', '#{time}')"
+        questions.each do |question|
+          (1..5).each do |anwsernum|
+            inserts.push "(#{(anwsernum%5 == 0)}, 'bla antwort', #{question.id}, '#{time}', '#{time}')"
+          end
         end
+        sql_command = "INSERT INTO answers (correct,  answer, question_id, created_at, updated_at) VALUES #{inserts.join(", ")}"
+        ActiveRecord::Base.connection.execute sql_command
+        nil
       end
-      sql_command = "INSERT INTO answers (correct,  answer, question_id, created_at, updated_at) VALUES #{inserts.join(", ")}"
-      ActiveRecord::Base.connection.execute sql_command
-      nil
-    }
+
+         }
     bench
   end
 end
