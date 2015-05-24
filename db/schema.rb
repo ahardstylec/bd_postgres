@@ -17,27 +17,19 @@ ActiveRecord::Schema.define(version: 20150518104041) do
   enable_extension "plpgsql"
 
   create_table "answers", force: :cascade do |t|
-    t.text     "answer"
-    t.integer  "question_id"
-    t.boolean  "correct"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
-  end
-
-  create_table "authors", force: :cascade do |t|
-    t.text     "name"
-    t.text     "email"
-    t.integer  "question_id"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.text    "answer"
+    t.integer "question_id"
+    t.boolean "correct"
   end
 
   create_table "questions", force: :cascade do |t|
-    t.text     "question"
-    t.integer  "author_id"
-    t.text     "flaws",      default: [],              array: true
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
+    t.text    "question"
+    t.text    "author_name"
+    t.text    "author_email"
+    t.integer "author_id"
+    t.text    "flaws",        default: [], array: true
   end
+
+  add_index "questions", ["author_email"], name: "index_questions_on_author_email", using: :btree
 
 end

@@ -1,18 +1,24 @@
 class Question < ActiveRecord::Base
   has_many :answers
-  belongs_to :author
 
   def self.bulk_insert(insert_multifier=1)
     puts "insert with #{100*10000*insert_multifier} records"
+    question_id= 1
     puts bench =Benchmark.measure {
       (1..100).each do |author_nummer|
-        author = Author.create(name: "author #{author_nummer}", email: "author_email_#{author_nummer}@author_email.de")
-        (1..10000*insert_multifier).each do |index|
-          question= Question.create(author_id: author.id, question: "frage #{index}")
+        sql_questions_map=[]
+        sql_answers_map=[]
+        sql_questions="INSERT INTO questions (id, question, author_name, author_email) VALUES "
+        sql_answers= "INSERT INTO answers (question_id, answer, correct) VALUES "
+        (1..(100*10000*insert_multifier)).each do |index|
+          sql_questions_map << "('#{question_id}', 'author #{author_nummer}', 'frage #{question_id}', 'author_email_#{author_nummer}@author_email.de')"
           (1..5).each do |anwsernum|
-            Answer.create(question_id: question.id, answer: "bla", correct: (anwsernum%5 == 0))
+            sql_answers_map << sprintf(" ('%s', '%s', '%s')", question_id, "answer soundo", "#{(anwsernum%5 == 0)}")
           end
+          question_id+=1
         end
+        self.connection.execute("#{sql_questions} #{sql_questions_map.join(',')};")
+        self.connection.execute("#{sql_answers} #{sql_answers_map.join(',')};")
       end
     }
     bench
@@ -20,8 +26,7 @@ class Question < ActiveRecord::Base
 
   def self.select_from_author
     questions=nil
-    author= Author.find_by_name("author 1")
-    bench= Benchmark.measure { questions = author.questions.all }
+    bench= Benchmark.measure { questions = Question.where(author_email: "author_email_1@author_email.de").all}
     puts "select from author 1: #{questions.count}"
     puts bench
   end
@@ -33,30 +38,4 @@ class Question < ActiveRecord::Base
     puts bench
   end
 
-  def self.sql_pure_inserts(insert_multifier)
-    puts "pure sql insert with #{100*10000*insert_multifier} records"
-    puts bench= Benchmark.measure {
-      questions =[]
-      authors = []
-      Author.transaction do
-        (1..100).map do |author_nummer|
-          authors<< Author.create(name: "author #{author_nummer}", email: "author_email_#{author_nummer}@author_email.de")
-        end
-      end
-      Question.transaction do
-        authors.each do |author|
-          (1..10000*insert_multifier).each do |index|
-            questions<<Question.create(author_id: author.id, question: "frage #{index}")
-          end
-        end
-      end
-      questions.each do |question|
-        (1..5).each do |anwsernum|
-          Answer.create(question_id: question.id, answer: 'bla antwort', correct: (anwsernum%5 == 0))
-        end
-      end
-      nil
-      }
-    bench
-  end
 end
