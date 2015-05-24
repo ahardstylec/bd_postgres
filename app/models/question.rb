@@ -10,7 +10,7 @@ class Question < ActiveRecord::Base
         sql_answers_map=[]
         sql_questions="INSERT INTO questions (id, question, author_name, author_email) VALUES "
         sql_answers= "INSERT INTO answers (question_id, answer, correct) VALUES "
-        (1..(100*10000*insert_multifier)).each do |index|
+        (1..(10000*insert_multifier)).each do |index|
           sql_questions_map << "('#{question_id}', 'author #{author_nummer}', 'frage #{question_id}', 'author_email_#{author_nummer}@author_email.de')"
           (1..5).each do |anwsernum|
             sql_answers_map << sprintf(" ('%s', '%s', '%s')", question_id, "answer soundo", "#{(anwsernum%5 == 0)}")
