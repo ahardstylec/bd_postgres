@@ -17,6 +17,9 @@ namespace :db_benchmark do
     # STDOUT.flush
     # trunc_tables
     base_5 = Question.bulk_insert(5)
+    Question.select_count
+    Question.select_count
+    Question.select_count
     Question.select_from_author
     Question.select_from_author
     Question.select_from_author
@@ -26,9 +29,6 @@ namespace :db_benchmark do
     # Question.select_from_author
     # Question.select_from_author
     # Question.select_from_author
-    # Question.select_count
-    # Question.select_count
-    # Question.select_count
     # STDOUT.flush
     # trunc_tables
   end
