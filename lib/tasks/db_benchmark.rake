@@ -24,7 +24,7 @@ namespace :db_benchmark do
     Question.select_from_author
     Question.select_from_author
     STDOUT.flush
-    trunc_tables
+    # trunc_tables
     # base_10 = Question.bulk_insert(10)
     # Question.select_from_author
     # Question.select_from_author
